@@ -30,8 +30,8 @@ body {
 
 h1 {
     color:#00ffe1;
-    margin-bottom:20px;
-    user-select:none;
+    margin-bottom:15px;
+    cursor:pointer;
 }
 
 .admin {
@@ -40,7 +40,7 @@ h1 {
 }
 
 input {
-    width:70%;
+    width:65%;
     padding:10px;
     border-radius:10px;
     border:none;
@@ -95,6 +95,7 @@ input {
     background:rgba(0,0,0,0.3);
     border-radius:12px;
     min-height:60px;
+    transition:0.3s;
 }
 
 .glow {
@@ -192,15 +193,9 @@ function pickDare(){
     },100);
 }
 
-// 🔐 SECRET ADMIN MODE (LONG PRESS TITLE)
-let pressTimer;
-
-document.getElementById("title").addEventListener("mousedown",()=>{
-    pressTimer=setTimeout(toggleAdmin,2000);
-});
-
-document.getElementById("title").addEventListener("mouseup",()=>{
-    clearTimeout(pressTimer);
+// 🔐 TAP TITLE TO OPEN ADMIN (MOBILE FRIENDLY)
+document.getElementById("title").addEventListener("click",()=>{
+    toggleAdmin();
 });
 
 function toggleAdmin(){

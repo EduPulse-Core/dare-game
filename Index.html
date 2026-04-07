@@ -1,1 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 Dare Generator Pro</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.container {
+    width: 420px;
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.05);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: fadeIn 1s ease;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00ffe1;
+}
+
+.inputBox {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+.addBtn {
+    background: #00ffe1;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.addBtn:hover {
+    transform: scale(1.1);
+}
+
+.list {
+    margin-top: 15px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.dare-item {
+    background: rgba(255,255,255,0.08);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.4s ease;
+}
+
+.remove {
+    background: crimson;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+}
+
+.remove:hover {
+    transform: scale(1.2);
+}
+
+.randomBtn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(45deg, #00ffe1, #00b3ff);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.randomBtn:hover {
+    transform: scale(1.05);
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 18px;
+    min-height: 60px;
+    background: rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+
+.glow {
+    animation: glow 1s infinite alternate;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideIn {
+    from {opacity: 0; transform: translateX(-20px);}
+    to {opacity: 1; transform: translateX(0);}
+}
+
+@keyframes glow {
+    from {box-shadow: 0 0 10px #00ffe1;}
+    to {box-shadow: 0 0 25px #00ffe1;}
+}
+
+@media (max-width: 450px) {
+    .container {
+        width: 90%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🔥 Dare Generator</h1>
+
+    <div class="inputBox">
+        <input type="text" id="dareInput" placeholder="Enter dare...">
+        <button class="addBtn" onclick="addDare()">+</button>
+    </div>
+
+    <div class="list" id="dareList"></div>
+
+    <button class="randomBtn" onclick="pickDare()">🎯 Pick Dare</button>
+
+    <div class="result" id="result">Your dare will appear here</div>
+</div>
+
+<script>
+let dares = JSON.parse(localStorage.getItem("dares")) || [];
+
+function save() {
+    localStorage.setItem("dares", JSON.stringify(dares));
+}
+
+function addDare() {
+    let input = document.getElementById("dareInput");
+    let value = input.value.trim();
+
+    if (value === "") return;
+
+    dares.push(value);
+    input.value = "";
+    renderList();
+    save();
+}
+
+function removeDare(index) {
+    dares.splice(index, 1);
+    renderList();
+    save();
+}
+
+function renderList() {
+    let list = document.getElementById("dareList");
+    list.innerHTML = "";
+
+    dares.forEach((dare, index) => {
+        let div = document.createElement("div");
+        div.className = "dare-item";
+        div.innerHTML = `
+            <span>${dare}</span>
+            <button class="remove" onclick="removeDare(${index})">X</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function pickDare() {
+    let result = document.getElementById("result");
+
+    if (dares.length === 0) {
+        result.innerText = "⚠️ Add some dares first!";
+        return;
+    }
+
+    result.classList.add("glow");
+    result.innerText = "Picking... 🎲";
+
+    let i = 0;
+    let interval = setInterval(() => {
+        result.innerText = dares[Math.floor(Math.random() * dares.length)];
+        i++;
+
+        if (i > 10) {
+            clearInterval(interval);
+            result.classList.remove("glow");
+        }
+    }, 100);
+}
+
+// Enter key support
+document.getElementById("dareInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") addDare();
+});
+
+// Initial load
+renderList();
+</script>
+
+</body>
+  </html>
